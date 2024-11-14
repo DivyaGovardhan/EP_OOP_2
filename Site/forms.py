@@ -1,7 +1,8 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import User
+from .models import User, DesignApplication, Category
 import re
+from django.core.validators import FileExtensionValidator
 
 class RegistrationForm(forms.ModelForm):
     username = forms.CharField(required=True, max_length=100, label='Имя пользователя', widget=forms.TextInput())
@@ -54,3 +55,37 @@ class RegistrationForm(forms.ModelForm):
 class LoginForm(forms.Form):
     username = forms.CharField(required=True, max_length=100)
     password = forms.CharField(required=True, max_length=100, widget=forms.PasswordInput)
+
+class CreateApplicationForm(forms.ModelForm):
+    title = forms.CharField(required=True, max_length=100, label='Название', widget=forms.TextInput())
+    description = forms.CharField(required=True, max_length=100, label='Описание', widget=forms.Textarea())
+    photo = forms.FileField(required=True, label='Фото помещения', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'bmp'])])
+
+    class Meta:
+        model = DesignApplication
+        fields = ['title', 'description', 'category', 'photo']
+        widgets = {'category':  forms.CheckboxSelectMultiple()}
+
+    def clean_photo(self):
+        photo = self.cleaned_data.get('photo')
+        if photo.size > 1024*1024*2:
+            raise ValidationError('Файл слишком большой. Размер не должен превышать 2 МБ.')
+        return photo
+
+    def clean(self):
+        cleaned_data = super().clean()
+        return cleaned_data
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+    def save(self, commit=True):
+        app = super().save(commit=False)
+        if self.user:
+            app.creator = self.user
+
+        if commit:
+            app.save()
+            self.save_m2m()
+        return app

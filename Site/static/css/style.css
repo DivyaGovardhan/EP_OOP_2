@@ -1,5 +1,12 @@
 .navbar {
     background-color: rgba(34, 0, 255, 0.13);
+    display: flex;
+    align-items: center;
+    jistify-content: center;
+}
+
+.navbar-nav {
+    align-items: center;
 }
 
 .navbar .nav-link {
@@ -73,4 +80,77 @@ label[for="id_consent"] {
 .btn-purple:hover {
     transition: 0.3s;
     background-color: #6a0dad;
+}
+
+
+
+
+
+
+
+.app-desc {
+    height: 50px;
+    overflow: hidden;
+    white-space: normal;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.app-display-category {
+    padding: 5px;
+    border-radius: 3px;
+    display: inline-block;
+    background-color: plum;
+    width: 100%;
+    height: 30px;
+    font-weight: bold;
+}
+
+.app-display-price {
+    padding: 5px;
+    border-radius: 3px;
+    display: inline-block;
+    background-color: #ffbd2e;
+    width: 100%;
+    height: 30px;
+    font-weight: bold;
+}
+
+.delete-button {
+    text-align: center;
+    background-color: gray;
+    transition-duration: 0.2s;
+}
+
+.delete-button:hover {
+    text-decoration: none;
+    color: white;
+    background-color: #dc3545;
+    transition-duration: 0.2s;
+}
+
+.delete-button-inactive {
+    text-align: center;
+    background-color: #dfdfdf;
+}
+
+.app-status {
+    font-weight: bold;
+    padding: 5px;
+    text-align: center;
+    border-radius: 0 0 5px 5px;
+}
+
+.bg-lightblue {
+    background-color: cornflowerblue;
+}
+
+.bg-yellow {
+    background-color: #ffbd2e;
+}
+
+.bg-green {
+    background-color: #8ada40;
 }

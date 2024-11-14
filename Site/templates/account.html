@@ -1,0 +1,39 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h3>Личный кабинет</h3>
+    {% if designapplication_list %}
+        <p class="h5 mt-4">Ваши заявки</p>
+        <hr>
+        <div class="app-display p-2">
+            {% for app in designapplication_list %}
+                <div class="app-display-card">
+                    <div>
+                        <p class="mb-2 h5 text-center">{{app.title}}</p>
+                        <p class="text-secondary mt-1 mb-1">{{ app.time_created_f }}</p>
+                        <p class="text-white mb-0 app-display-category text-truncate">{{ app.get_categories }}</p>
+                        <p class="text-white mb-0 app-display-price">{{ app.get_price }} ₽</p>
+                        <p class="text-secondary mt-1 mb-1 app-desc">{{ app.description }}</p>
+                    </div>
+                    {% if app.photo %}
+                        <img src="{{ app.photo.url }}" alt="{{ app.title }}" class="app-display-img"/>
+                    {% endif %}
+                    <p class="text-white app-status mt-0
+                    {% if app.status == 'n' %} bg-lightblue
+                    {% elif app.status == 'w' %} bg-yellow
+                    {% else %} bg-green
+                    {% endif %}
+                    ">{{ app.get_status_display }}</p>
+                    {% if app.status == 'n' %}
+                        <a href="{% url 'app_delete' app.id %}" class="button delete-button pt-2 pb-2">Удалить</a>
+                    {% else %}
+                        <p class="button delete-button-inactive pt-2 pb-2 mb-0">В работе</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+      <p>У вас нет заявок.</p>
+    {% endif %}
+{% endblock %}

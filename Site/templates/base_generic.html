@@ -3,7 +3,6 @@
     <head>
         {% load bootstrap4 %}
         {% bootstrap_css %}
-        {% load widget_tweaks %}
     
         {% block title %}<title>Design</title>{% endblock %}
         <meta charset="utf-8"/>
@@ -27,7 +26,13 @@
                                 <span class="nav-link disabled">Аккаунт: {{ user.get_username }}</span>
                             </li>
                             <li class="nav-item">
+                                <a class="nav-link" href="{% url 'account'%}">Личный кабинет</a>
+                            </li>
+                            <li class="nav-item">
                                 <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
+                            </li>
+                            <li class="nav-item">
+                                <a style="color: white; margin-left: 20px;" class="btn-purple nav-link" href="{% url 'create_app'%}">Создать заявку</a>
                             </li>
                         {% else %}
                             <li class="nav-item">
