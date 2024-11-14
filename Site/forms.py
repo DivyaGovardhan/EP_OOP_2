@@ -15,7 +15,7 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'email', 'first_name', 'last_name', 'password']
+        fields = ['username', 'email', 'first_name', 'last_name', 'patronymic', 'password']
 
     def check_username(self):
         username = self.cleaned_data.get('username')

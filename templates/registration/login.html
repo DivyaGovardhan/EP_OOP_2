@@ -4,9 +4,22 @@
 
 <h1>Вход</h1>
 <form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Войти</button>
+    {% csrf_token %}
+    <div class="form-group">
+        {{ form.username.label }}
+        {{ form.username}}  <!-- Add Bootstrap class for styling -->
+        {% if form.username.errors %}
+            <div class="text-danger">{{ form.username.errors }}</div>
+        {% endif %}
+    </div>
+    <div class="form-group">
+        {{ form.password.label }}
+        {{ form.password}}  <!-- Add Bootstrap class for styling -->
+        {% if form.password.errors %}
+            <div class="text-danger">{{ form.password.errors }}</div>
+        {% endif %}
+    </div>
+    <button type="submit" class="btn-purple">Войти</button>
 </form>
 
 {% endblock %}

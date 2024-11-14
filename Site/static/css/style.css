@@ -1,11 +1,76 @@
-form > p {
-    display: flex;
-    justify-content: end;
-    width: 40%;
-    background-color: red;
+.navbar {
+    background-color: rgba(34, 0, 255, 0.13);
 }
 
-.sidebar-nav > li {
-    list-style-type: none;
-    margin: 10px;
+.navbar .nav-link {
+    color: #4b0082;
+}
+
+.navbar .nav-link:hover {
+    color: #ffcc00;
+}
+
+.navbar-brand {
+    font-size: 22pt;
+}
+
+.navbar-brand:hover {
+    color: #4b0082;
+}
+
+.content-separator {
+    background-color: #4b0082;
+    height: 3px;
+    margin: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px; /* Space between fields */
+}
+
+form label{
+    color: rgba(75, 0, 130, 0.61);
+}
+
+form input {
+    border: 2px solid #4b0082; /* Dark purple border */
+    padding: 10px; /* Padding inside input fields */
+    border-radius: 5px; /* Rounded corners */
+    margin-right: 50%;
+    width: 60%; /* Full width */
+    box-sizing: border-box; /* Include padding in width calculation */
+}
+
+form input:hover {
+    transition: 0.3s;
+    background-color: rgba(34, 0, 255, 0.13);
+}
+
+#id_consent{
+    width: 25px;
+    height: 25px;
+}
+
+p:has(#id_consent) {
+    display: flex;
+    align-items: center;
+}
+
+label[for="id_consent"] {
+    margin-bottom: 0;
+    margin-right: 5px;
+}
+
+.btn-purple {
+    background-color: #4b0082; /* Dark purple button */
+    color: white; /* White text color */
+    padding: 10px 20px; /* Padding for button */
+    border: none; /* No border */
+    border-radius: 5px; /* Rounded corners for button */
+    cursor: pointer; /* Pointer cursor on hover */
+}
+
+.btn-purple:hover {
+    transition: 0.3s;
+    background-color: #6a0dad;
 }
