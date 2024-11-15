@@ -4,5 +4,23 @@
 
 <h1>Design Pro</h1>
 <p>Дизайн интерьеров</p>
+    
+<div class="app-display">
+    {% for app in designapplication_list %}
+        <div class="app-display-card">
+            <div>
+                <h3 class="text-center">{{app.title}}</h3>
+                <div class="content-separator"></div>
+                <p class="text-secondary">{{ app.get_time_created }}</p>
+                <p class="app-display-category text-truncate">Категория: {{ app.get_categories }}</p>
+                <p class="text-secondary app-desc">{{ app.description }}</p>
+                <div class="content-separator light"></div>
+            </div>
+            {% if app.photo %}
+                <img src="{{ app.photo.url }}" alt="{{ app.title }}" class="app-display-img"/>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
 
 {% endblock %}

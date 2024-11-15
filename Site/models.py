@@ -16,18 +16,17 @@ class User(AbstractUser):
 
 class Category(models.Model):
     title = models.CharField(max_length=100, verbose_name='Название', unique=True)
-    price = models.IntegerField(verbose_name='Цена', default=0)
 
     def __str__(self):
-        return f'{self.title} - {self.price}'
+        return self.title
 
 class DesignApplication(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Создатель')
     title = models.CharField(max_length=100, verbose_name='Название')
     description = models.TextField(max_length=2000, verbose_name='Описание')
-    photo = models.FileField(verbose_name='Фото помещения')
-    time_created = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
-    category = models.ManyToManyField(Category, null=False, verbose_name='Категория')
+    photo = models.FileField(verbose_name='Фото')
+    time_created = models.DateTimeField(auto_now_add=True, null=True, verbose_name='Дата создания')
+    category = models.ManyToManyField(Category, verbose_name='Категория')
 
     APP_STATUS = (
         ('n', 'Новая'),
@@ -40,7 +39,7 @@ class DesignApplication(models.Model):
     def __str__(self):
         return self.title
 
-    def time_created_f(self):
+    def get_time_created(self):
         return self.time_created
 
     def get_category(self):
@@ -50,7 +49,3 @@ class DesignApplication(models.Model):
     def get_categories(self):
         categories = self.category.all()
         return ', '.join(str(category.title) for category in categories)
-
-    def get_price(self):
-        categories = self.category.all()
-        return sum(category.price for category in categories)

@@ -5,7 +5,7 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('superadmin/', admin.site.urls),
+    path('admin/', admin.site.urls),
     path('design/', include('Site.urls')),
     path('catalog/', RedirectView.as_view(url='', permanent=True)),
     path('', RedirectView.as_view(url='/design/', permanent=True)),

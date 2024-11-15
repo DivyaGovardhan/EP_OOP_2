@@ -38,7 +38,7 @@ class RegistrationForm(forms.ModelForm):
             raise ValidationError('Фамилия может содержать только кириллицу, пробелы и дефисы')
         return last_name
 
-    def clean(self):
+    def check_password(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
         password_repeat = cleaned_data.get('password_repeat')
@@ -64,7 +64,6 @@ class CreateApplicationForm(forms.ModelForm):
     class Meta:
         model = DesignApplication
         fields = ['title', 'description', 'category', 'photo']
-        widgets = {'category':  forms.CheckboxSelectMultiple()}
 
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')
