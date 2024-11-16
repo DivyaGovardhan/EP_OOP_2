@@ -1,3 +1,5 @@
+from django.views import View
+from django.views.generic import CreateView, TemplateView
 from django.contrib.auth import authenticate, logout, login
 from django.shortcuts import render, redirect
 from .forms import RegistrationForm, LoginForm, CreateApplicationForm
@@ -7,11 +9,13 @@ from django.views import generic
 from django.views.generic import DeleteView
 from .models import DesignApplication
 
-def index(request):
-    return render(request, 'index.html')
 
-def login_user(request):
-    if request.method == 'POST':
+class LoginUserView(View):
+    def get(self, request):
+        form = LoginForm()
+        return render(request, 'registration/login.html', {'form': form})
+
+    def post(self, request):
         form = LoginForm(request.POST)
         if form.is_valid():
             username = form.cleaned_data['username']
@@ -22,35 +26,37 @@ def login_user(request):
                 return redirect('index')
             else:
                 form.add_error(None, 'Неверное имя пользователя или пароль')
-    else:
-        form = LoginForm()
-    return render(request, 'registration/login.html', {'form': form})
+        return render(request, 'registration/login.html', {'form': form})
 
-def register(request):
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            form.save()
-            return redirect('login')
-    else:
-        form = RegistrationForm()
-    return render(request, 'registration/register.html', {'form': form})
+class RegisterView(CreateView):
+    form_class = RegistrationForm
+    template_name = 'registration/register.html'
+    success_url = reverse_lazy('login')
 
-def logout_user(request):
-    logout(request)
-    return render(request, 'registration/logout.html')
+    def form_valid(self, form):
+        # Optionally handle any additional logic here before saving
+        return super().form_valid(form)
 
-def create_application(request):
-    if request.method == 'POST':
+class LogoutUserView(TemplateView):
+    template_name = 'registration/logout.html'
+
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return super().get(request, *args, **kwargs)
+
+class CreateApplicationView(View):
+    def get(self, request):
+        form = CreateApplicationForm()
+        return render(request, 'create_app.html', {'form': form})
+
+    def post(self, request):
         form = CreateApplicationForm(request.POST, request.FILES, user=request.user)
         if form.is_valid():
             form.save()  # Saves the instance with correct category
             return redirect('account')
         else:
             print(form.errors)  # Print out the errors for debugging
-    else:
-        form = CreateApplicationForm()
-    return render(request, 'create_app.html', {'form': form})
+        return render(request, 'create_app.html', {'form': form})
 
 class AccountListView(LoginRequiredMixin, generic.ListView):
     model = DesignApplication

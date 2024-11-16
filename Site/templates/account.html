@@ -20,7 +20,6 @@
                     {% if app.photo %}
                         <img src="{{ app.photo.url }}" alt="{{ app.title }}" class="app-display-img"/>
                     {% endif %}
-                    <p class="app-status">Статус: {{ app.get_status_display }}</p>
                     {% if app.status == 'n' %}
                         <a href="{% url 'app_delete' app.id %}" class="btn-purple nav-link text-white">Удалить</a>
                     {% elif app.status == 'w' %}
