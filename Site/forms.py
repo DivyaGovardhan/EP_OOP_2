@@ -18,7 +18,7 @@ class RegistrationForm(forms.ModelForm):
         model = User
         fields = ['username', 'email', 'first_name', 'last_name', 'patronymic', 'password']
 
-    def check_username(self):
+    def clean_username(self):
         username = self.cleaned_data.get('username')
         if User.objects.filter(username=username).exists():
             raise ValidationError('Данное имя пользователя уже занято')
@@ -26,19 +26,19 @@ class RegistrationForm(forms.ModelForm):
             raise ValidationError('Имя пользователя может содержать только латиницу и дефисы')
         return username
 
-    def check_first_name(self):
+    def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
         if not re.match(r'^[А-я\s-]+$', first_name):
             raise ValidationError('Имя может содержать только кириллицу, пробелы и дефисы')
         return first_name
 
-    def check_last_name(self):
+    def clean_last_name(self):
         last_name = self.cleaned_data.get('last_name')
         if not re.match(r'^[А-я\s-]+$', last_name):
             raise ValidationError('Фамилия может содержать только кириллицу, пробелы и дефисы')
         return last_name
 
-    def check_password(self):
+    def clean_password(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
         password_repeat = cleaned_data.get('password_repeat')
@@ -75,10 +75,6 @@ class CreateApplicationForm(forms.ModelForm):
         cleaned_data = super().clean()
         return cleaned_data
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super().__init__(*args, **kwargs)
-
     def save(self, commit=True):
         app = super().save(commit=False)
         if self.user:
@@ -88,3 +84,39 @@ class CreateApplicationForm(forms.ModelForm):
             app.save()
             self.save_m2m()
         return app
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('user', None)
+        super().__init__(*args, **kwargs)
+
+class RedactAppForm(forms.ModelForm):
+    design_comment = forms.CharField(required=False, max_length=200, label='', widget=forms.Textarea(attrs={'placeholder': 'Комментарий'}))
+    design_photo = forms.FileField(required=False, label='Изображение дизайна', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'bmp'])])
+
+    class Meta:
+        model = DesignApplication
+        fields = ['category', 'status', 'design_comment', 'design_photo']
+
+    def clean_design_comment(self):
+        new_status = self.cleaned_data.get('status')
+        design_comment = self.cleaned_data.get('design_comment')
+        if new_status == 'w' and not design_comment:
+            raise ValidationError('Комментарий должен быть заполнен.')
+        return design_comment
+
+    def clean_design_photo(self):
+        new_status = self.cleaned_data.get('status')
+        design_photo = self.cleaned_data.get('design_photo')
+        if new_status == 'd' and not design_photo:
+            raise ValidationError('Изображение должно быть заполнено.')
+        return design_photo
+
+class AppFilterForm(forms.Form):
+    STATUS_CHOICES = [
+        ('', 'Все'),
+        ('n', 'Новая'),
+        ('w', 'Принято в работу'),
+        ('d', 'Выполнено'),
+    ]
+
+    status = forms.ChoiceField(choices=STATUS_CHOICES, required=False, label='Статус')

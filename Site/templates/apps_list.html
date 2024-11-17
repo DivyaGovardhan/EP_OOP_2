@@ -2,7 +2,7 @@
 
 {% block content %}
 
-<h2>Личный кабинет</h2>
+<h3>Заявки</h3>
     <hr>
     <form method="get" class="status-filter-form">
         {% csrf_token %}
@@ -10,7 +10,6 @@
         <button type="submit">Применить</button>
     </form>
     {% if designapplication_list %}
-        <h5>Мои заявки</h5>
         <hr>
         <div class="app-display">
             {% for app in designapplication_list %}
@@ -24,19 +23,22 @@
                         <div class="content-separator light"></div>
                     </div>
                     {% if app.photo %}
-                        <img src="{{ app.photo.url }}" alt="{{ app.title }}" class="app-display-img"/>
+                        <img src="{{ app.photo.url }}" alt="{{ app.title }}" class="app-display-img app-display-img-list"/>
                     {% endif %}
+                    <p class="app-display-category text-truncate">Статус:
                     {% if app.status == 'n' %}
-                        <a href="{% url 'app_delete' app.id %}" class="btn-purple nav-link text-white">Удалить</a>
+                        Новая</p>
                     {% elif app.status == 'w' %}
-                        <p class="btn-purple nav-link text-white in-work">В работе</p>
+                        В работе</p>
                     {% else %}
-                        <p class="btn-purple nav-link text-white in-work">Выполнено</p>
+                        Выполнено</p>
                     {% endif %}
+                    <a href="{% url 'redact_app' app.id %}" class="btn-purple nav-link text-white">Редактировать</a>
+                    <a href="{% url 'app_delete' app.id %}">Удалить</a>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-      <p>У вас нет заявок.</p>
+      <p>В базе данных нет заявок.</p>
     {% endif %}
 {% endblock %}

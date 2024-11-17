@@ -23,7 +23,13 @@
                     <ul class="navbar-nav ml-auto">
                         {% if user.is_authenticated %}
                             <li class="nav-item">
-                                <span class="nav-link disabled">Аккаунт: {{ user.get_username }}</span>
+                                <span class="nav-link disabled">
+                                    {% if perms.mysite.can_edit_status %}
+                                        Админ:
+                                    {% else %}
+                                        Аккаунт:
+                                    {% endif %}
+                                    {{ user.get_username }}</span>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'account'%}">Личный кабинет</a>
@@ -31,6 +37,10 @@
                             <li class="nav-item">
                                 <a class="nav-link" href="{% url 'logout' %}">Выйти</a>
                             </li>
+                            {% if perms.mysite.can_edit_status %}
+                                <li><a class="nav-link" href="{% url 'apps_list' %}">Заявки</a></li>
+                                <li><a class="nav-link" href="{% url 'categ_list' %}">Категории</a></li>
+                            {% endif %}
                             <li class="nav-item">
                                 <a class="btn-purple nav-link text-white" href="{% url 'create_app'%}">Создать заявку</a>
                             </li>

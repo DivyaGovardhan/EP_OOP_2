@@ -1,14 +1,26 @@
 from django.views import View
-from django.views.generic import CreateView, TemplateView
+from django.views.generic import CreateView, TemplateView, UpdateView
 from django.contrib.auth import authenticate, logout, login
 from django.shortcuts import render, redirect
-from .forms import RegistrationForm, LoginForm, CreateApplicationForm
-from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import RegistrationForm, LoginForm, CreateApplicationForm, RedactAppForm, AppFilterForm
+from django.contrib.auth.mixins import LoginRequiredMixin, PermissionRequiredMixin
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.generic import DeleteView
-from .models import DesignApplication
+from .models import DesignApplication, Category
 
+
+class HomepageListView(generic.ListView):
+    model = DesignApplication
+    template_name = 'index.html'
+
+    def get_queryset(self):
+        return DesignApplication.objects.all().filter(status='d').order_by('-time_created')[:4]
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['apps_in_process'] = DesignApplication.objects.filter(status='w').count()
+        return context
 
 class LoginUserView(View):
     def get(self, request):
@@ -63,24 +75,87 @@ class AccountListView(LoginRequiredMixin, generic.ListView):
     template_name = 'account.html'
 
     def get_queryset(self):
-        return DesignApplication.objects.filter(creator=self.request.user).order_by('-time_created')
+        queryset = super().get_queryset()
+        status = self.request.GET.get('status')
 
-class HomepageListView(generic.ListView):
-    model = DesignApplication
-    template_name = 'index.html'
+        if status:
+            queryset = queryset.filter(status=status)
 
-    def get_queryset(self):
-        return DesignApplication.objects.all().filter(status='d').order_by('-time_created')[:4]
+        queryset = queryset.order_by('-time_created')
+
+        return queryset
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['apps_in_process'] = DesignApplication.objects.filter(status='w').count()
+        context['filter_form'] = AppFilterForm(self.request.GET or None)
         return context
 
-class AppDelete(DeleteView):
+class AppsListView(generic.ListView, PermissionRequiredMixin):
+    permission_required = 'Site.can_edit_status'
+    model = DesignApplication
+    template_name = 'apps_list.html'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        status = self.request.GET.get('status')
+
+        if status:
+            queryset = queryset.filter(status=status)
+
+        queryset = queryset.order_by('-time_created')
+
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_form'] = AppFilterForm(self.request.GET or None)
+        return context
+
+class RedactApp(UpdateView, PermissionRequiredMixin):
+    permission_required = 'Site.can_edit_status'
+    model = DesignApplication
+    template_name = 'redact_app.html'
+    form_class = RedactAppForm
+
+    success_url = reverse_lazy('apps_list')
+
+class AppDelete(DeleteView, LoginRequiredMixin):
     model = DesignApplication
     success_url = reverse_lazy('account')
     template_name = 'delete_app.html'
+
+    def get_queryset(self):
+        return super().get_queryset()
+
+class CreateCategory(CreateView, PermissionRequiredMixin):
+    permission_required = 'Site.can_edit_status'
+    model = Category
+    template_name = 'create_categ.html'
+    fields = ['title']
+
+    success_url = reverse_lazy('categ_list')
+
+class CategoriesListView(generic.ListView, PermissionRequiredMixin):
+    permission_required = 'Site.can_edit_status'
+    model = Category
+    template_name = 'categ_list.html'
+
+    def get_queryset(self):
+        return Category.objects.all().order_by('id')
+
+class RedactCategory(UpdateView, PermissionRequiredMixin):
+    permission_required = 'Site.can_edit_status'
+    model = Category
+    template_name = 'redact_categ.html'
+    fields = ['title']
+
+    success_url = reverse_lazy('categ_list')
+
+class CategoryDelete(DeleteView, PermissionRequiredMixin):
+    permission_required = 'Site.can_edit_status'
+    model = Category
+    success_url = reverse_lazy('categ_list')
+    template_name = 'delete_categ.html'
 
     def get_queryset(self):
         return super().get_queryset()

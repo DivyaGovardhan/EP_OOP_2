@@ -1,0 +1,15 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<h3>Категории</h3>
+    <a href="{% url 'create_categ' %}" class="btn-purple nav-link text-white">Создать категорию</a>
+    {% if category_list %}
+        <hr>
+        {% for category in category_list %}
+            <a href="{% url 'redact_categ' category.id %}" class="h5 d-block mb-3">{{ category }}</a>
+        {% endfor %}
+    {% else %}
+      <p>В базе данных нет категорий.</p>
+    {% endif %}
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+    <h3>Редактирование заявки</h3>
+    <div class="app-display-card app-display-card-edit">
+        <div>
+            <p class="mb-2 h5 text-center">{{ object.title }}</p>
+            <p class="text-secondary mt-1 mb-1">{{ object.time_created_f }}</p>
+            <p class="text-white mb-1 app-display-category text-truncate">{{ object.get_categories }}</p>
+        </div>
+        <div>
+            {% if object.photo %}
+                <img src="{{ object.photo.url }}" alt="{{ object.title }}" class="app-display-img"/>
+            {% endif %}
+            <p>{{ object.get_status_display }}</p>
+        </div>
+    </div>
+    <form method="post" novalidate enctype="multipart/form-data" class="mt-4">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-purple">Сохранить</button>
+    </form>
+
+{% endblock %}

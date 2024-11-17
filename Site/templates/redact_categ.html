@@ -1,0 +1,12 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+    <h3>Редактирование категории</h3>
+    <form method="post" novalidate class="mt-1">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn-purple">Сохранить</button>
+        <a href="{% url 'delete_categ' object.id %}" class="btn btn-danger font-weight-bold">Удалить</a>
+    </form>
+{% endblock %}
