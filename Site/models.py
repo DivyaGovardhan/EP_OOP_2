@@ -26,7 +26,7 @@ class DesignApplication(models.Model):
     description = models.TextField(max_length=2000, verbose_name='Описание')
     photo = models.FileField(verbose_name='Фото')
     time_created = models.DateTimeField(auto_now_add=True, null=True, verbose_name='Дата создания')
-    category = models.ManyToManyField(Category, verbose_name='Категория')
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True, blank=True, verbose_name='Категория')
 
     APP_STATUS = (
         ('n', 'Новая'),
@@ -43,9 +43,6 @@ class DesignApplication(models.Model):
         return self.time_created
 
     def get_category(self):
-        categories = self.category.all()[:1]
-        return ', '.join(str(category.title) for category in categories)
-
-    def get_categories(self):
-        categories = self.category.all()
-        return ', '.join(str(category.title) for category in categories)
+        if self.category is not None:
+            return str(self.category.title)
+        return ''

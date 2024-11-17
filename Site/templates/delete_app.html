@@ -5,14 +5,14 @@
 
   <p class="h5">Вы точно хотите удалить заявку: {{ object }}?</p>
 
-    <div class="app-display-card app-display-card-index app-display-card-edit">
+    <div class="app-display-card app-display-card-edit">
         <div>
             <p class="mb-2 h5 text-center">{{object.title}}</p>
             <p class="text-secondary mt-1 mb-1">{{ object.time_created_f }}</p>
-            <p class="text-white mb-1 app-display-category text-truncate">{{ object.get_category }}</p>
+            <p class="text-white mb-1 text-truncate">{{ object.get_category }}</p>
         </div>
         {% if object.photo %}
-            <img src="{{ object.photo.url }}" alt="{{ object.title }}" class="app-display-img app-display-img-index"/>
+            <img src="{{ object.photo.url }}" alt="{{ object.title }}" class="app-display-img"/>
         {% endif %}
     </div>
 
