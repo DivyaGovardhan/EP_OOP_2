@@ -17,11 +17,6 @@ class HomepageListView(generic.ListView):
     def get_queryset(self):
         return DesignApplication.objects.all().filter(status='d').order_by('-time_created')[:4]
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['apps_in_process'] = DesignApplication.objects.filter(status='w').count()
-        return context
-
 class LoginUserView(View):
     def get(self, request):
         form = LoginForm()
