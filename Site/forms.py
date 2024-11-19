@@ -143,6 +143,20 @@ class RedactAppForm(forms.ModelForm):
             raise ValidationError('Изображение должно быть заполнено')
         return design_photo
 
+    def __init__(self, *args, **kwargs):
+        super(RedactAppForm, self).__init__(*args, **kwargs)
+        if self.initial.get('status') in ['w', 'd']:
+            self.fields['status'].disabled = True
+        if self.initial.get('status') == 'w':
+            self.fields['design_comment'].required = True
+            self.fields['design_photo'].required = False
+        elif self.initial.get('status') == 'd':
+            self.fields['design_comment'].required = False
+            self.fields['design_photo'].required = True
+        else:
+            self.fields['design_comment'].required = False
+            self.fields['design_photo'].required = False
+
 class AppFilterForm(forms.Form):
     STATUS_CHOICES = [
         ('', 'Все'),

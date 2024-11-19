@@ -16,10 +16,25 @@
             <p>{{ object.get_status_display }}</p>
         </div>
     </div>
-    <form method="post" novalidate enctype="multipart/form-data" class="mt-4">
+    <form method="post" novalidate enctype="multipart/form-data" id="redact_app_form">
         {% csrf_token %}
-        {{ form.as_p }}
+        {{ form.status }}
+        {% if form.status.value == 'w' %}
+            <div id="id_design_comment">
+                {{ form.design_comment }}
+            </div>
+        {% elif form.status.value == 'd' %}
+            <div id="id_design_photo">
+                {{ form.design_photo }}
+            </div>
+        {% endif %}
         <button type="submit" class="btn-purple">Сохранить</button>
     </form>
-
+        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script>
+            $('#id_status').change(function() {
+                console.log('cusses')
+                $('#redact_app_form').submit();
+            });
+        </script>
 {% endblock %}

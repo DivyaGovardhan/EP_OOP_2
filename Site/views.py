@@ -111,8 +111,23 @@ class RedactApp(UpdateView, PermissionRequiredMixin):
     model = DesignApplication
     template_name = 'redact_app.html'
     form_class = RedactAppForm
-
     success_url = reverse_lazy('apps_list')
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        form = self.get_form()
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+    # def get_initial(self):
+    #     initial = super(RedactApp, self).get_initial()
+    #     if self.request.method == 'POST':
+    #         initial['status'] = self.request.POST.get('status')
+    #     else:
+    #         initial['status'] = self.object.status
+    #     return initial
 
 class AppDelete(DeleteView, LoginRequiredMixin):
     model = DesignApplication
