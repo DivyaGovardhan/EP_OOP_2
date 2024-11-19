@@ -1,5 +1,9 @@
+from datetime import timedelta, time, date
+
 from django import forms
 from django.core.exceptions import ValidationError
+# from django.utils.datetime_safe import date
+
 from .models import User, DesignApplication
 import re
 from django.core.validators import FileExtensionValidator
@@ -26,22 +30,30 @@ class RegistrationForm(forms.ModelForm):
             raise ValidationError('Имя пользователя может содержать только латиницу и дефисы')
         return username
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if not re.match(r'^[A-z][\w.-]+@[\w.-]+\.[A-z]{2,6}$', email):
+            raise ValidationError('Адрес электронной почты не валиден')
+        return email
+
     def clean_first_name(self):
         first_name = self.cleaned_data.get('first_name')
-        if not re.match(r'^[А-я\s-]+$', first_name):
+        if not re.match(r'^[А-яёЁ\s-]+$', first_name):
             raise ValidationError('Имя может содержать только кириллицу, пробелы и дефисы')
         return first_name
 
     def clean_last_name(self):
         last_name = self.cleaned_data.get('last_name')
-        if not re.match(r'^[А-я\s-]+$', last_name):
+        if not re.match(r'^[А-яёЁ\s-]+$', last_name):
             raise ValidationError('Фамилия может содержать только кириллицу, пробелы и дефисы')
         return last_name
 
-    def clean_password(self):
+    def clean(self):
         cleaned_data = super().clean()
         password = cleaned_data.get('password')
         password_repeat = cleaned_data.get('password_repeat')
+        print(f'Password: {password}')
+        print(f'Password repeat: {password_repeat}')
         if password != password_repeat:
             raise ValidationError('Пароли не совпадают')
 
@@ -60,6 +72,8 @@ class CreateApplicationForm(forms.ModelForm):
     title = forms.CharField(required=True, max_length=100, label='Название', widget=forms.TextInput())
     description = forms.CharField(required=True, max_length=100, label='Описание', widget=forms.Textarea())
     photo = forms.FileField(required=True, label='Фото помещения', validators=[FileExtensionValidator(allowed_extensions=['jpg', 'jpeg', 'png', 'bmp'])])
+    completion_date = forms.DateField(required=True, label='Дата заявки', widget=forms.DateInput(attrs={'type': 'date'}))
+    completion_time = forms.TimeField(required=True, label='Время заявки', widget=forms.TimeInput(attrs={'type': 'time'}))
 
     class Meta:
         model = DesignApplication
@@ -68,8 +82,26 @@ class CreateApplicationForm(forms.ModelForm):
     def clean_photo(self):
         photo = self.cleaned_data.get('photo')
         if photo.size > 1024*1024*2:
-            raise ValidationError('Файл слишком большой. Размер не должен превышать 2 МБ.')
+            raise ValidationError('Файл слишком большой. Размер не должен превышать 2 МБ')
         return photo
+
+    def clean_completion_date(self):
+        completion_date = self.cleaned_data.get('completion_date')
+        today = date.today()
+        tomorrow = today + timedelta(days=1)
+
+        if completion_date < today or completion_date == tomorrow:
+            raise ValidationError('Можно выбрать только даты после завтрашнего дня')
+
+        return completion_date
+
+    def clean_completion_time(self):
+        completion_time = self.cleaned_data.get('completion_time')
+
+        if completion_time < time(9, 0) or completion_time > time(19, 0):
+            raise ValidationError('Время должно быть между 9:00 и 19:00')
+
+        return completion_time
 
     def clean(self):
         cleaned_data = super().clean()
@@ -101,14 +133,14 @@ class RedactAppForm(forms.ModelForm):
         new_status = self.cleaned_data.get('status')
         design_comment = self.cleaned_data.get('design_comment')
         if new_status == 'w' and not design_comment:
-            raise ValidationError('Комментарий должен быть заполнен.')
+            raise ValidationError('Комментарий должен быть заполнен')
         return design_comment
 
     def clean_design_photo(self):
         new_status = self.cleaned_data.get('status')
         design_photo = self.cleaned_data.get('design_photo')
         if new_status == 'd' and not design_photo:
-            raise ValidationError('Изображение должно быть заполнено.')
+            raise ValidationError('Изображение должно быть заполнено')
         return design_photo
 
 class AppFilterForm(forms.Form):
